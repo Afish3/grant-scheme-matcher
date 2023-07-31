@@ -1,4 +1,5 @@
 # **Project Proposal:**
+A grant scheme to project mapping tool increasing the accessability for landowners to apply for woodland and biodiversity grants across Scotland.
 <hr>
 
 * **Problem**: 
