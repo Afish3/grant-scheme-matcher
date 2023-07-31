@@ -1,4 +1,4 @@
-#**Project Proposal:**
+# **Project Proposal:**
 <hr>
 
 * **Problem**: 
