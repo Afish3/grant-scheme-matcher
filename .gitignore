@@ -2,4 +2,4 @@
 venv/
 __pyache__
 .vscode/
-.DS_Store
+.DS_STORE
