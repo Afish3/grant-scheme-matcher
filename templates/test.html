@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Find Grants!</h1>
+
+<div id="question-container">
+    <h1>Questionnaire</h1>
+    <form id="question-form" method="POST">
+        {{ form.hidden_tag() }}
+        <div id="question"></div>
+        <button id="submit-button" type="submit">Next</button>
+    </form>
+</div>
+
+<h1>Questionnaire</h1>
+    <div id="question">
+        <!-- Question will be displayed here -->
+    </div>
+    <form id="question-form">
+        <!-- Form fields will be dynamically inserted here -->
+        <button id="submit-button" type="submit">Next</button>
+    </form>
+
+{% endblock %}

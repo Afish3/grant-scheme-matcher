@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template
+from flask import Flask, redirect, render_template, session, json, request, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
 from dotenv import load_dotenv
 import pickle
@@ -9,6 +9,8 @@ from langchain.llms import OpenAI
 from langchain.callbacks import get_openai_callback
 
 from pdfs import Pdf 
+from forms import GrantForm, questions
+from model import User
 
 app = Flask(__name__)
 
@@ -24,13 +26,42 @@ app.debug = True
 def index():
     load_dotenv()
     return render_template('base.html')
+
+@app.route('/start_form')
+def start_form():
+    """
+    Initialized a WTForm instance for validatioin and handles subsequent questions through AJAX requests through JavaScript.
+
+    This route should be hit once for the showing of the form.
+    """
+
+    return render_template('templates/test.html', form=GrantForm(), current_question=0)
+
+@app.route('/form/question/<int:question_id>', methods=['POST', 'GET'])
+def get_form_question(question_id):
+    """
+    This route serves as an endpoint for AJAX requests made through Javascript that serve questions in the form.
+    """
+    form = GrantForm()
+    if form.validate_on_submit():
+        if session['user']:
+            user = session['user']
+            user.answers = json.loads(request.data)
+        else:
+            user = User()
+            user.answers = json.loads(request.data)
+            session['user'] = user
+        return jsonify({"success": True})
     
+    return GrantForm.get_next_question(form)
+
 @app.route('/form')
 def handle_form():
     # get the pdf text
     if os.path.exists('all_grants.pkl'):
         with open("all_grants.pkl", "rb") as f:
                 knowledge_base = pickle.load(f)
+        knowledge_base = Pdf.get_embedded_text_chunks()
     else:
         all_grants_text = ''
         for filename in os.listdir('static/files'):
@@ -108,13 +139,3 @@ def handle_form():
     grants_list = [int(x) for x in res.split(',')]
 
     return render_template('response.html', res=res)
-
-
-# Each grant will be associated with a number. 
-# Forestry Grant Scheme: 1
-# Forestry Co-op scheme: 2
-# Future Woodlands Fund: 3
-# Crofting Agricultural Grant Scheme: 4
-# Croft Woodland Project, MoreWoods: 5
-# South of Scotland Tree Planting Grant Scheme: 6
-# Only return a list of numbers for grants that the applicant could be eligible for.
