@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Find Grants!</h1>
+  <div id="question-container">
+      {{question}}
+  </div>
+  <div class="form-container">
+      <form id="question-form" method="POST" action='/post/response/{{num}}'>
+        {{ form.hidden_tag() }}
+      
+        {% for field in form.errors %}
+            <div class="alert alert-danger">{{ field }}:
+                <ul>
+                    {% for error in form.errors[field] %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+        <!-- Form fields will be dynamically inserted here -->
+        <div id="replace_with_current_question">
+          {{ form_html|safe }}
+        </div>
+        <button id="submit-button" type="submit">Next</button>
+      </form>
+  </div>
+  
+{% endblock %}
+
+

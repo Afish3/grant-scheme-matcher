@@ -1,4 +1,4 @@
-from flask import Flask, redirect, render_template, session, json, request, jsonify
+from flask import Flask, redirect, render_template, session, json, request, jsonify, flash, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from dotenv import load_dotenv
 import pickle
@@ -10,15 +10,21 @@ from langchain.callbacks import get_openai_callback
 
 from pdfs import Pdf 
 from forms import GrantForm, questions
-from model import User
+from model import connect_db, db, User, Grants
 
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///grant-matcher"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = True
 
 app.debug = True
 app.config['SECRET_KEY'] = "I'LL NEVER TELL!!"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
+
+connect_db(app)
 
 @app.route('/')
 def index():
@@ -32,10 +38,67 @@ def start_form():
 
     This route should be hit once for the showing of the form.
     """
+    form = GrantForm()
 
-    form=GrantForm()
-    print(f' Im a start form with token: {form.csrf_token}')
     return render_template('test.html', form=form, current_question=0)
+
+@app.route('/session', methods=['POST'])
+def setting_session():
+    """Post request route that redirects to the start of the survey after setting a session cookie to track user responses in a list.    
+    """
+    session['responses'] = []
+    print(session['responses'])
+    return redirect('/form/question/0')
+
+@app.route('/form/question/<int:num>', methods=['POST', 'GET'])
+def show_question(num):
+    """Form path question by question.
+
+    The form questions correspond to the number of items in the list of responses
+
+    >>> num == len(session['responses'])
+    True
+    """
+    form = GrantForm()
+    responses = session.get('responses')
+
+    # # if request.method == 'POST':
+    # #     if responses is None:
+    # #         responses = {}
+    # #     if request.data is not None:
+    # #         data = json.loads(request.data)
+    # #         responses[f'q{num}'] = data.get(f'q{num}')
+    # #         session.set('responses', responses)
+    # #     raise
+
+    #     if len(responses.keys()) != num:
+    #         flash('Please complete the form in order as the questions come up...', 'error')
+    #         flash('Thank you!', 'error')
+    #         return redirect(f'/form/question/{len(responses)}')
+    #     elif num >= len(questions) and (len(responses.keys()) == len(questions)):
+    #         flash('Thank you for taking the time to fill out the form!', 'success')
+    #         flash('WOOHOO! Here are some grants you may be elgibile for...', 'success')
+    #         return redirect(url_for(handle_form)) 
+    
+    next_question = GrantForm.get_next_question(form)
+    if next_question is not None:
+        form_html = next_question.json['form']
+        question = next_question.json['question']
+        return render_template('questions.html', form=form, question=question, form_html=form_html, num=num)
+    return render_template('errors.html')
+
+@app.route('/post/response/<int:num>', methods=['POST'])
+def post_response(num):
+    form = GrantForm()
+    responses = session.get('responses')
+
+    if request.method == 'POST':
+        if responses is None:
+            responses = {}
+        data = form.q1.data
+        raise
+        session.set('responses', responses)
+    return redirect(f'/form/question/{num+1}')
 
 @app.route('/form/question/', methods=['POST', 'GET'])
 def get_form_question():

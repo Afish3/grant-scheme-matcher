@@ -16,7 +16,7 @@ states = ["Land Management Plan", "Habitat Protectioin", "Deer Management", "Woo
 class GrantForm(FlaskForm):
     # q1 = BooleanField('question')
     q1 = SelectField('Question', choices=[st for st in states])
-    q2 = BooleanField('next question')
+    q2 = StringField('next question')
     q3 = BooleanField('next question')
     q4 = StringField('next question')
     q5 = BooleanField('next question')
@@ -31,11 +31,16 @@ class GrantForm(FlaskForm):
             field_name = f'q{current_question + 1}'
 
             field_html = str(getattr(form, field_name))
-            # Render_template is used here to produce html of the form which includes the hidden field CSRF token for form validation
-            form_html = render_template('form.html', form=form, field_html=field_html)
+            form_html = f''' 
+                            <div class="form-group row">
+                                <div class="col-sm-10">
+                                {field_html}
+                                </div>
+                            </div>
+                        '''
 
             session['current_question'] = current_question + 1
             return jsonify({"question": question, 
                             "form": form_html})
         else:
-            return jsonify({"question": None})
+            return None
