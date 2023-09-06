@@ -14,13 +14,11 @@ from model import User
 
 app = Flask(__name__)
 
+app.debug = True
 app.config['SECRET_KEY'] = "I'LL NEVER TELL!!"
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
-
-app.debug = True
-
 
 @app.route('/')
 def index():
@@ -35,23 +33,30 @@ def start_form():
     This route should be hit once for the showing of the form.
     """
 
-    return render_template('templates/test.html', form=GrantForm(), current_question=0)
+    form=GrantForm()
+    print(f' Im a start form with token: {form.csrf_token}')
+    return render_template('test.html', form=form, current_question=0)
 
-@app.route('/form/question/<int:question_id>', methods=['POST', 'GET'])
-def get_form_question(question_id):
+@app.route('/form/question/', methods=['POST', 'GET'])
+def get_form_question():
     """
     This route serves as an endpoint for AJAX requests made through Javascript that serve questions in the form.
     """
+    user = User()
+    session['user_id'] = user.id
     form = GrantForm()
-    if form.validate_on_submit():
-        if session['user']:
-            user = session['user']
-            user.answers = json.loads(request.data)
-        else:
-            user = User()
-            user.answers = json.loads(request.data)
-            session['user'] = user
-        return jsonify({"success": True})
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            if session.get('user_id') is not None:
+                answer = json.loads(request.data)
+                print(answer)
+                answer.pop('csrf_token')
+                user.answers = answer
+
+            return jsonify({"success": True})
+        
+        print("not validated")
+        return jsonify({"error": True})
     
     return GrantForm.get_next_question(form)
 

@@ -1,9 +1,10 @@
 from wtforms import SelectField, StringField, TextAreaField, FileField, IntegerField, BooleanField, SubmitField
 from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired, Optional
-from flask import session, jsonify
+from flask import session, jsonify, render_template
 
 questions = ['question', 
+             'next question', 
              'next question', 
              'next question', 
              'next question', 
@@ -13,12 +14,13 @@ states = ["Land Management Plan", "Habitat Protectioin", "Deer Management", "Woo
 
 
 class GrantForm(FlaskForm):
-    q1 = StringField('Question')
-    q2 = StringField('next question')
-    q3 = StringField('next question')
+    # q1 = BooleanField('question')
+    q1 = SelectField('Question', choices=[st for st in states])
+    q2 = BooleanField('next question')
+    q3 = BooleanField('next question')
     q4 = StringField('next question')
-    q5 = StringField('final question')
-    submit = SubmitField('Next')
+    q5 = BooleanField('next question')
+    q6 = StringField('final question')
 
     @classmethod
     def get_next_question(cls, form):
@@ -27,18 +29,13 @@ class GrantForm(FlaskForm):
         if current_question < len(questions):
             question = questions[current_question]
             field_name = f'q{current_question + 1}'
+
+            field_html = str(getattr(form, field_name))
+            # Render_template is used here to produce html of the form which includes the hidden field CSRF token for form validation
+            form_html = render_template('form.html', form=form, field_html=field_html)
+
+            session['current_question'] = current_question + 1
             return jsonify({"question": question, 
-                            "form": str(getattr(form, field_name))})
+                            "form": form_html})
         else:
             return jsonify({"question": None})
-
-    # croft = BooleanField("you a tenant, owner-occupier, sub-tenant, or short-lease holder of a registered croft approved by the Crofting Commission?", validators=[Optional()])
-
-    # name = StringField("Name of Area",  validators=[
-    #                    InputRequired(message="Snack Name can't be blank")])
-    
-    # price = IntegerField("How Much Money Do You Need?")
-    # quantity = IntegerField("How many hectares of land?")
-    # is_healthy = BooleanField("This is on private land")
-
-    # state = SelectField('Type of project', choices=[(st, st) for st in states])

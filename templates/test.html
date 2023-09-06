@@ -1,25 +1,73 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block content %}
+<head>
+  <meta charset="UTF-8">
+  <title>Grant Matcher</title>
 
-<h1>Find Grants!</h1>
+  <link rel="stylesheet"
+        href="https://unpkg.com/bootstrap/dist/css/bootstrap.css">
+  <!-- <script src="https://unpkg.com/jquery"></script> -->
+  <!-- <script src="https://unpkg.com/popper"></script> -->
+  <!-- <script src="https://unpkg.com/bootstrap"></script> -->
 
-<div id="question-container">
-    <h1>Questionnaire</h1>
-    <form id="question-form" method="POST">
-        {{ form.hidden_tag() }}
-        <div id="question"></div>
-        <button id="submit-button" type="submit">Next</button>
-    </form>
-</div>
+  <!-- <link rel="stylesheet"
+        href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+  <link rel="stylesheet" href="/static/stylesheets/style.css">
+  <link rel="shortcut icon" href="/static/favicon.ico"> -->
+
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+<nav class="navbar navbar-expand">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a href="/" class="navbar-brand">
+        <img src="#" alt="logo">
+        <span>Grant Matcher</span>
+      </a>
+    </div>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="/signup">Sign up</a></li>
+      <li><a href="/login">Log in</a></li>
+    </ul>
+  </div>
+</nav>
+<div class="container">
+  {% for category, message in get_flashed_messages(with_categories=True) %}
+  <div class="alert alert-{{ category }}">{{ message }}</div>
+  {% endfor %}
+
+  <h1>Find Grants!</h1>
 
 <h1>Questionnaire</h1>
-    <div id="question">
+    <div id="question-container">
         <!-- Question will be displayed here -->
     </div>
-    <form id="question-form">
-        <!-- Form fields will be dynamically inserted here -->
-        <button id="submit-button" type="submit">Next</button>
-    </form>
-
-{% endblock %}
+    <div class="form-container">
+        <form id="question-form">
+            <div id="form-token">
+                {{ form.hidden_tag() }}
+            </div>
+        
+            {% for field in form.errors %}
+                <div class="alert alert-danger">{{ field }}:
+                    <ul>
+                        {% for error in form.errors[field] %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+            <!-- Form fields will be dynamically inserted here -->
+            <div id="replace_with_current_question">
+    
+            </div>
+            <button id="submit-button" type="submit">Next</button>
+        </form>
+    </div>
+</div>
+</body>
+<script src="../static/form.js"></script>
+</html>
