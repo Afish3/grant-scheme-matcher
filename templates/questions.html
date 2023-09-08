@@ -2,31 +2,40 @@
 
 {% block content %}
 
-<h1>Find Grants!</h1>
-  <div id="question-container">
-      {{question}}
+<h1 class="text-center mt-5">Find Grants!</h1>
+<div class="progress" style="height: 20px;">
+  <div class="progress-bar bg-info" style="width: {{progress_so_far}}%;" role="progressbar" aria-valuenow="{{progress_so_far}}" aria-valuemin="0" aria-valuemax="100"></div>
+</div>
+<main class="fade-in">
+  <div id="main">
+    <div class="q-spacer">
+      <div id="question-container" class="fade-in container text-center mb-5">
+          <h3 class="text-center text-white">{{question}}</h3>
+      </div>
   </div>
-  <div class="form-container">
-      <form id="question-form" method="POST" action='/post/response/{{num}}'>
-        {{ form.hidden_tag() }}
-      
-        {% for field in form.errors %}
-            <div class="alert alert-danger">{{ field }}:
-                <ul>
-                    {% for error in form.errors[field] %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
+    <div id="form" class="form-container fade-in">
+    <div class="f-spacer">
+          <form id="question-form" method="POST" action='/post/response/{{num}}'>
+            {{ form.hidden_tag() }}
+          
+            {% for field in form.errors %}
+                <div class="alert alert-danger">{{ field }}:
+                    <ul>
+                        {% for error in form.errors[field] %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+            <!-- Form fields will be dynamically inserted here -->
+            <div id="replace_with_current_question" class="fade-in mb-5 select">
+              {{ form_html|safe }}
             </div>
-        {% endfor %}
-        <!-- Form fields will be dynamically inserted here -->
-        <div id="replace_with_current_question">
-          {{ form_html|safe }}
-        </div>
-        <button id="submit-button" type="submit">Next</button>
-      </form>
-  </div>
+          </div>
+            <button class="fade-in btn btn-lg btn-info mt-5 ml-5" id="submit-button" type="submit">Next</button>
+          </form>
+      </div>
+    </div>
+</main>
   
 {% endblock %}
-
-

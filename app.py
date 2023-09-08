@@ -26,31 +26,24 @@ debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
+grant_titles = ["Forestry Grant Scheme", "Forestry Co-op scheme", "Future Woodlands Fund",
+                "Crofting Agricultural Grant Scheme", "Croft Woodland Project, MoreWoods",
+                "South of Scotland Tree Planting Grant Scheme"]
+
+def get_progress(total, current):
+    return (current / total) * 100
+
 @app.route('/')
 def index():
     load_dotenv()
-    return render_template('base.html')
+    if session.get('eligible_grants') is not None:
+        grants = session.get('eligible_grants')
+        responses_dict = session.get('responses')
+        responses = [(key, value) for key, value in responses_dict.items()]
+        return render_template('response.html', grants_list=grants, responses=responses, grant_titles=grant_titles)
+    return render_template('home.html')
 
-@app.route('/start_form')
-def start_form():
-    """
-    Initialized a WTForm instance for validatioin and handles subsequent questions through AJAX requests through JavaScript.
-
-    This route should be hit once for the showing of the form.
-    """
-    form = GrantForm()
-
-    return render_template('test.html', form=form, current_question=0)
-
-@app.route('/session', methods=['POST'])
-def setting_session():
-    """Post request route that redirects to the start of the survey after setting a session cookie to track user responses in a list.    
-    """
-    session['responses'] = []
-    print(session['responses'])
-    return redirect('/form/question/0')
-
-@app.route('/form/question/<int:num>', methods=['POST', 'GET'])
+@app.route('/form/question/<int:num>')
 def show_question(num):
     """Form path question by question.
 
@@ -60,31 +53,23 @@ def show_question(num):
     True
     """
     form = GrantForm()
-    responses = session.get('responses')
+    responses = session.get('responses', {})
 
-    # # if request.method == 'POST':
-    # #     if responses is None:
-    # #         responses = {}
-    # #     if request.data is not None:
-    # #         data = json.loads(request.data)
-    # #         responses[f'q{num}'] = data.get(f'q{num}')
-    # #         session.set('responses', responses)
-    # #     raise
-
-    #     if len(responses.keys()) != num:
-    #         flash('Please complete the form in order as the questions come up...', 'error')
-    #         flash('Thank you!', 'error')
-    #         return redirect(f'/form/question/{len(responses)}')
-    #     elif num >= len(questions) and (len(responses.keys()) == len(questions)):
-    #         flash('Thank you for taking the time to fill out the form!', 'success')
-    #         flash('WOOHOO! Here are some grants you may be elgibile for...', 'success')
-    #         return redirect(url_for(handle_form)) 
+    if len(responses.keys()) != num - 1:
+        flash('Please complete the form in order as the questions come up...', 'error')
+        flash('Thank you!', 'error')
+        return redirect(f'/form/question/{len(responses)+1}')
+    elif num >= len(questions) and (len(responses.keys()) == len(questions)):
+        flash('Thank you for taking the time to fill out the form!', 'success')
+        flash('WOOHOO! Here are some grants you may be elgibile for...', 'success')
+        return redirect(url_for('handle_form'))
     
-    next_question = GrantForm.get_next_question(form)
+    next_question = GrantForm.get_next_question(form, num)
     if next_question is not None:
         form_html = next_question.json['form']
         question = next_question.json['question']
-        return render_template('questions.html', form=form, question=question, form_html=form_html, num=num)
+        progress = str(round(get_progress(len(questions), num)))
+        return render_template('questions.html', form=form, question=question, form_html=form_html, num=num, progress_so_far=progress)
     return render_template('errors.html')
 
 @app.route('/post/response/<int:num>', methods=['POST'])
@@ -93,44 +78,52 @@ def post_response(num):
     responses = session.get('responses')
 
     if request.method == 'POST':
+        print(form.csrf_token)
+        if form.validate_on_submit():
+            print('Successfully VALIDATED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        else:
+            print('Failed to validate!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         if responses is None:
             responses = {}
-        data = form.q1.data
-        raise
-        session.set('responses', responses)
+        data = form.data
+        answer = data.get(f'q{num}')
+        responses[questions[num-1]] = answer
+        session['responses'] =  responses
+        print(session['responses'])
     return redirect(f'/form/question/{num+1}')
-
-@app.route('/form/question/', methods=['POST', 'GET'])
-def get_form_question():
-    """
-    This route serves as an endpoint for AJAX requests made through Javascript that serve questions in the form.
-    """
-    user = User()
-    session['user_id'] = user.id
-    form = GrantForm()
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            if session.get('user_id') is not None:
-                answer = json.loads(request.data)
-                print(answer)
-                answer.pop('csrf_token')
-                user.answers = answer
-
-            return jsonify({"success": True})
-        
-        print("not validated")
-        return jsonify({"error": True})
-    
-    return GrantForm.get_next_question(form)
 
 @app.route('/form')
 def handle_form():
-    # get the pdf text
+
+    responses_dict = session.get('responses')
+    responses_text = ''
+    for key, value in responses_dict.items():
+        responses_text += f'{key}: {value}, '
+    
+    knowledge_base = get_knowledge_base()
+    res = handle_ai_similarity_search(responses_text, knowledge_base)
+
+    grants_list = [int(x) for x in res.split(',')]
+    session['eligible_grants'] = grants_list
+
+    responses = [(key, value) for key, value in responses_dict.items()]
+    return render_template('response.html', res=res, grants_list=grants_list, responses=responses, grant_titles=grant_titles)
+
+@app.route('/restart')
+def restart():
+    """
+    Reset session and start a new form to find grants.
+    """
+    session['responses'] = {}
+    session['grants'] = None
+    return redirect(url_for('show_question', num=1))
+
+def get_knowledge_base():
     if os.path.exists('all_grants.pkl'):
         with open("all_grants.pkl", "rb") as f:
                 knowledge_base = pickle.load(f)
-        knowledge_base = Pdf.get_embedded_text_chunks()
     else:
+        # get the pdf text
         all_grants_text = ''
         for filename in os.listdir('static/files'):
             path = f'static/files/{filename}'
@@ -145,16 +138,17 @@ def handle_form():
         # create vector store
         knowledge_base = Pdf.get_embedded_text_chunks(chunks)
 
-    # data = form.data
+    return knowledge_base
+
+def handle_ai_similarity_search(responses, knowledge_base):
+    """
+    This function takes user responses and plugs them into the formulated prompt.
+
+    The function runs a similarity search using the llm with the knowledge base and the prompt and returns the AI response as a list of available grants by number in the form of a string.
+    """
     msg = f"""
         A potential grant applicant meets these criteria.
-        Land Owner,
-        Size of Site: Over 10 hectares,
-        Current Land Use: Public Land, not a croft,
-        Age of the Project: Old,
-        Are there any legal requirements for planting: Yes,
-        Individual or group owned/managed land: Group,
-        Age of land owner(s)/manager(s): All less than 41
+        {responses}
         Based on this information please match them with all grants that they could be eligible for. 
         Each grant will be associated with a number. 
         Forestry Grant Scheme: 1
@@ -177,6 +171,19 @@ def handle_form():
         Age of land owner/manager: 53
         </input>
         1,3,4 
+        Example 2:
+        <input>
+        A potential grant applicant meets these criteria.
+        Land Owner,
+        Size of Site: Less than 0.25 hectares,
+        Current Land Use: Croft,
+        Age of the Project: New,
+        Are there any legal requirements for planting: No,
+        Individual or group owned/managed land: Individual,
+        Age of land owner/manager: 53,
+        Is the land in the South of Scotland: Yes
+        </input>
+        1,3,4,5,6
         """
     matching_documents = knowledge_base.similarity_search(msg)
 
@@ -186,24 +193,4 @@ def handle_form():
         res = chain.run(input_documents=matching_documents, question=msg)
         print(callback)
 
-    # import json
-    # import requests
-    # HUGGINGFACEHUB_API_TOKEN = os.environ.get("HUGGINGFACEHUB_API_TOKEN")
-    # headers = {"Authorization": f"Bearer {HUGGINGFACEHUB_API_TOKEN}"}
-    # API_URL = "https://api-inference.huggingface.co/models/deepset/roberta-base-squad2"
-    # def query(payload):
-    #     data = json.dumps(payload)
-    #     response = requests.request("POST", API_URL, headers=headers, data=data)
-    #     return json.loads(response.content.decode("utf-8"))
-    # data = query(
-    #     {
-    #         "inputs": {
-    #             "question": prompt,
-    #             "context": requirements,
-    #         }
-    #     }
-    # )
-
-    grants_list = [int(x) for x in res.split(',')]
-
-    return render_template('response.html', res=res)
+    return res
