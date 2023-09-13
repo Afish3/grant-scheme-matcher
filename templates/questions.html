@@ -1,19 +1,18 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
 <h1 class="text-center mt-5">Find Grants!</h1>
 <div class="progress" style="height: 20px;">
   <div class="progress-bar bg-info" style="width: {{progress_so_far}}%;" role="progressbar" aria-valuenow="{{progress_so_far}}" aria-valuemin="0" aria-valuemax="100"></div>
 </div>
-<main class="fade-in">
+<main class="">
   <div id="main">
     <div class="q-spacer">
       <div id="question-container" class="fade-in container text-center mb-5">
           <h3 class="text-center text-black">{{question}}</h3>
       </div>
   </div>
-    <div id="form" class="form-container fade-in">
+    <div id="form" class="form-container">
     <div class="f-spacer">
           <form id="question-form" method="POST" action='/post/response/{{num}}'>
             {{ form.hidden_tag() }}
@@ -35,7 +34,7 @@
             <!-- {% if num > 1 %}
               <button class="fade-in btn btn-lg btn-secondary mt-5 text-center" id="back-button"><a href="/form/question/{{num-1}}" style="color: white; text-decoration: none;">Previous</a></button>
             {% endif %} -->
-            <button class="fade-in btn btn-lg btn-info mt-5 text-center" id="submit-button" type="submit">Next</button>
+            <button class="btn btn-lg btn-info mt-5 text-center" id="submit-button" type="submit">Next</button>
           </form>
       </div>
     </div>
