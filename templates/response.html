@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container results">
     <div class="row">
       <div class="col">
         <div class="container response">
@@ -22,20 +22,22 @@
         <div class="container grants">
             {% for num in grants_list %}
                 <div class="container individual-grant">
-                    <h5 class="text-white">{{grant_titles[num-1]}}</h5>
-                    <iframe src="../static/files/{{num}}.pdf" frameborder="0" width="400" height="500"></iframe>
+                    <h5 class="text-black text-left">{{grant_titles[num-1]}}</h5>
+                    <div class="style-line"></div>
+                    <iframe src="../static/files/{{num}}.pdf" frameborder="0" width="350" height="450"></iframe>
                     <div class="additional-info row">
                         <div class="col">
-                            <h6 class="mt-3 text-white">You could recieve</h6>
+                            <h6 class="mt-3 text-black">You could recieve</h6>
                             <div class="mt-3 mb-0 counter amount" data-target="60000">0</div>
                         </div>
                         <div class="col">
-                            <h6 class="mt-3 text-white">How To Apply
+                            <h6 class="mt-3 text-black">How To Apply
                                 <button class="mt-3 mb-0 btn btn-info"><a href="https://www.ruralpayments.org/topics/all-schemes/forestry-grant-scheme/forestry-grant-scheme-full-guidance-menu/" target="_blank" style="text-decoration: none; color: black;">Apply Here</a></button>
                             </h6>
                         </div>
                     </div>
                 </div>
+                <hr>
             {% endfor %}
         </div>
       </div>

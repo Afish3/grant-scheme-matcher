@@ -17,7 +17,7 @@ questions = ["Are you a tenant, owner-occupier, sub-tenant, or short-lease holde
 
 states = ["Land Management Plan", "Habitat Protectioin", "Deer Management", "Woodlands In and Around Towns", "Low Impact Silvicultural Systems"]
 
-land_uses = ['registered croft', ]
+land_uses = ['croft / farm', 'commercial', 'private land, personnal use', 'public land']
 
 ownership_types = ['The land is individually owned', 'The land is group owned']
 
@@ -39,7 +39,7 @@ class GrantForm(FlaskForm):
     q6 = SelectField(questions[5], choices=['Yes', 'No'])
     q7 = SelectField(questions[6], choices=['Yes', 'No'])
     q8 = SelectField(questions[7], choices=['Yes', 'No'])
-    q9 = SelectMultipleField(questions[8], choices=[size for size in land_sizes])
+    q9 = SelectField(questions[8], choices=[size for size in land_sizes])
     q10 = SelectField(questions[9], choices=[hope for hope in hopes_for_project])
     q11 = SelectField(questions[10], choices=['Yes, my land is in the south of Scotland', 'No'])
 

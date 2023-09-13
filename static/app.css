@@ -1,4 +1,7 @@
-body { text-align: center; 
+body { 
+    text-align: center; 
+    background-color: #23b499;
+    background-color: rgba(27, 177, 27, 0.2)
 } 
 
 @keyframes fade-in { 
@@ -15,7 +18,7 @@ body { text-align: center;
   .fade-in:nth-child(3) { animation-delay: .5s; } 
   
   main {
-    background-color: rgb(0, 149, 214);
+    background-color: white;
     border-radius: 1rem;
     padding: 1rem;
     height: 50vh;
@@ -110,6 +113,18 @@ input {
     transform: translate(-50%, -50%);
  }
 
+ button#back-button {
+    height: 10vh;
+    width: 15vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 70%;
+    left: 30%;
+    transform: translate(-50%, -50%);
+ }
+
  div.f-spacer {
     display: flex;
     position: absolute;
@@ -133,8 +148,9 @@ input {
     padding: 2rem;
     width: 35vw;
     height: 80vh;
-    background-color: #e3f2fd;
+    background-color: white;
     overflow: scroll;
+    border-radius: 2rem;
  }
 
  div.grants {
@@ -142,15 +158,18 @@ input {
     margin-top: 4rem;
     padding: 2rem;
     height: 80vh;
-    background-color: rgba(27, 177, 27, 0.5);
+    background-color: white;
     overflow: scroll;
+    border-radius: 2rem;
  }
 
  div.individual-grant {
     text-align: center;
     margin-bottom: 1rem;
     padding: 1rem;
-    background-color: rgba(44, 10, 10, 0.5);
+    background-color: white;
+    width: 35vw;
+    border-radius: 2rem;
  }
 
  div.additional-info {
@@ -159,7 +178,16 @@ input {
 
  div.amount {
     border-radius: 2rem;
-    background-color: grey;
-    width: 50%;
+    background-color: rgba(27, 177, 27, 0.5);
+    width: 70%;
     text-align: center;
+    margin-left: 2rem;
+    font-size: 1.5rem;
+ }
+
+ div.style-line {
+    background: linear-gradient(to right, rgba(27, 177, 27, 0.8) 50%, white);
+    font-size: 1rem;
+    height: 1em;
+    margin-bottom: 1em;
  }

@@ -9,20 +9,10 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet"
         href="https://unpkg.com/bootstrap/dist/css/bootstrap.css">
-  
-  <!-- <script src="https://unpkg.com/jquery"></script> -->
-  <!-- <script src="https://unpkg.com/popper"></script> -->
-  <!-- <script src="https://unpkg.com/bootstrap"></script> -->
-
-  <!-- <link rel="stylesheet"
-        href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
-  <link rel="stylesheet" href="/static/stylesheets/style.css">
-  <link rel="shortcut icon" href="/static/favicon.ico"> -->
-
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 </head>
 
-<body class="fade-in">
+<body class="fade-in" {% block style %} {% endblock%}>
 <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;">
   <div class="container-fluid">
     <div class="navbar-header">
