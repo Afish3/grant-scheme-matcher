@@ -106,8 +106,7 @@ def handle_form():
     grants_list = [int(x) for x in res.split(',')]
     session['eligible_grants'] = grants_list
 
-    responses = [(key, value) for key, value in responses_dict.items()]
-    return render_template('response.html', res=res, grants_list=grants_list, responses=responses, grant_titles=grant_titles)
+    return redirect(url_for('index'))
 
 @app.route('/restart')
 def restart():
