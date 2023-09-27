@@ -31,10 +31,12 @@
               {{ form_html|safe }}
             </div>
           </div>
-            <!-- {% if num > 1 %}
-              <button class="fade-in btn btn-lg btn-secondary mt-5 text-center" id="back-button"><a href="/form/question/{{num-1}}" style="color: white; text-decoration: none;">Previous</a></button>
-            {% endif %} -->
+          <div class="buttons">
+            {% if num > 1 %}
+              <a href="/back" style="color: black; text-decoration: none;" class="btn btn-lg btn-secondary btn-outline" id="back-button">Previous</a>
+            {% endif %}
             <button class="btn btn-lg btn-info mt-5 text-center" id="submit-button" type="submit">Next</button>
+          </div>
           </form>
       </div>
     </div>

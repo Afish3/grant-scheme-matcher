@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template, session, json, request, jsonify, flash, url_for
 from flask_debugtoolbar import DebugToolbarExtension
+from collections import OrderedDict
 from dotenv import load_dotenv
 import pickle
 import os
@@ -9,7 +10,7 @@ from langchain.llms import OpenAI
 from langchain.callbacks import get_openai_callback
 
 from pdfs import Pdf 
-from forms import GrantForm, questions
+from forms import GrantForm, questions, grant_data
 from model import connect_db, db, User, Grants
 
 app = Flask(__name__)
@@ -33,6 +34,11 @@ grant_titles = ["Forestry Grant Scheme", "Forestry Co-op scheme", "Future Woodla
 def get_progress(total, current):
     return (current / total) * 100
 
+def is_string(val):
+    return isinstance(val, str)
+
+app.jinja_env.filters['is_string'] = is_string
+
 @app.route('/')
 def index():
     load_dotenv()
@@ -40,7 +46,12 @@ def index():
         grants = session.get('eligible_grants')
         responses_dict = session.get('responses')
         responses = [(key, value) for key, value in responses_dict.items()]
-        return render_template('response.html', grants_list=grants, responses=responses, grant_titles=grant_titles)
+        size = responses[len(responses)-1][1]
+        age = responses[len(responses)-4][1]
+        amount_of_applicants = responses[len(responses)-3][1]
+        for num in grants:
+            grant_data[f'g{num}']['amount'] = Grants.calculate_amount(num, size, age, amount_of_applicants)
+        return render_template('response.html', grants_list=grants, responses=responses, grant_titles=grant_titles, grant_data=grant_data)
     return render_template('home.html')
 
 @app.route('/form/question/<int:num>')
@@ -53,11 +64,9 @@ def show_question(num):
     True
     """
     form = GrantForm()
-    responses = session.get('responses', {})
+    responses = session.get('responses', OrderedDict())
 
     if len(responses.keys()) != num - 1:
-        flash('Please complete the form in order as the questions come up...', 'error')
-        flash('Thank you!', 'error')
         return redirect(f'/form/question/{len(responses)+1}')
     elif num >= len(questions) and (len(responses.keys()) == len(questions)):
         flash('Thank you for taking the time to fill out the form!', 'success')
@@ -91,6 +100,18 @@ def post_response(num):
         session['responses'] =  responses
         print(session['responses'])
     return redirect(f'/form/question/{num+1}')
+
+@app.route('/back')
+def go_to_previous_question():
+    """Reverses the most recent answer and redirects to the previous question"""
+    responses = session.get('responses', {})
+    num = len(responses)
+    print(responses)
+    print(questions[num-1])
+    del responses[questions[num-1]]
+    session['responses'] = responses
+    print(session.get('responses', {}))
+    return redirect(url_for('show_question', num=num))
 
 @app.route('/form')
 def handle_form():

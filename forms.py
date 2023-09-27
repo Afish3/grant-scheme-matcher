@@ -15,23 +15,33 @@ questions = ["Are you a tenant, owner-occupier, sub-tenant, or short-lease holde
              "What do you hope to see come out of this project?",
              "Is your land located in the South of Scotland near the Scottish Borders?"]
 
+grant_data = {'g1': {'amount': 1, 'url': 
+                     'https://www.ruralpayments.org/topics/all-schemes/forestry-grant-scheme/forestry-grant-scheme-full-guidance-menu/'},
+              'g2': {'amount': 1, 'url': 
+                     'https://www.ruralpayments.org/publicsite/futures/topics/all-schemes/forestry-grant-scheme/forestry-co-operation/'},
+              'g3': {'amount': 1, 'url': 'https://www.futurewoodlands.org.uk/funding/future-woodlands-fund/'},
+              'g4': {'amount': 1, 'url': 'https://www.ruralpayments.org/topics/all-schemes/crofting-agricultural-grant-scheme/'},
+              'g5': {'amount': 1, 'url': 'https://www.woodlandtrust.org.uk/about-us/where-we-work/scotland/croft-woodlands/'},
+              'g6': {'amount': 1, 'url': 'https://tweedforum.org/wp-content/uploads/2023/06/TF_SSTPG_tree-planting-application-form.pdf'}}
+
 states = ["Land Management Plan", "Habitat Protectioin", "Deer Management", "Woodlands In and Around Towns", "Low Impact Silvicultural Systems"]
 
 land_uses = ['croft / farm', 'commercial', 'private land, personnal use', 'public land']
 
 ownership_types = ['The land is individually owned', 'The land is group owned']
 
-land_sizes = ['Less than 0.25 hectares', 'Between 3 and 5 hectares', 'Between 3 and 100 hectares']
+land_sizes = ['Less than 0.25 hectares', 'Less than 3 hectares', 'Between 3 and 5 hectares', 'Between 3 and 10 hectares', 'Between 3 and 100 hectares']
 
-hopes_for_project = ['Imporvements to my croft (agricultural buildings, sewage, etc.)',                   'Improvement of farm animal well-being', 
+hopes_for_project = ['Imporvements to my croft (agricultural buildings, sewage, etc.)',                   
+                     'Improvement of farm animal well-being', 
                      'Improvement of ecological and habitat robustness', 
                      'Increasing carbon stores through halting degradation and loss of native woodland', 
                      'Natural flood management', 
+                     'Deer management', 
                      'other']
 
 class GrantForm(FlaskForm):
     q1 = SelectField(questions[0], choices=['Yes', 'No'])
-    # q1 = SelectField('Question', choices=[st for st in states])
     q2 = SelectField(questions[1], choices=['Yes', 'No'])
     q3 = SelectField(questions[2], choices = [use for use in land_uses])
     q4 = SelectField(questions[3], choices = [own for own in ownership_types])

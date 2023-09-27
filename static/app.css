@@ -21,8 +21,7 @@ body {
     background-color: white;
     border-radius: 1rem;
     padding: 1rem;
-    height: 50vh;
-    width: 80vw;
+    margin-top: 1rem;
     display: flex;
     position: absolute;
     top: 50%;
@@ -46,16 +45,7 @@ input {
     margin: 1rem 1rem;
 }
 
-/* select {
-    background-color: white;
-    border: none;
-    border-radius: 4px;
-    line-height: 2rem;
-    padding: 0.5em 3.5em 0.5em 1em;
-    margin: 2rem;
-  } */
-
-  select {
+select {
     -webkit-appearance:none;
     -moz-appearance:none;
     -ms-appearance:none;
@@ -78,7 +68,6 @@ input {
  .select {
     position: relative;
     display: flex;
-    width: 20em;
     height: 3em;
     line-height: 3;
     background: #7ad2c0;
@@ -102,27 +91,21 @@ input {
  }
 
  button#submit-button {
-    height: 10vh;
-    width: 15vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 70%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    padding: 1rem, 2rem;
  }
 
- button#back-button {
-    height: 10vh;
-    width: 15vw;
+ a#back-button {
+    font-size: 2rem;
+    padding: 1rem, 2rem;
+    margin-right: 2rem;
+ }
+
+ .buttons {
     display: flex;
     justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 70%;
-    left: 30%;
-    transform: translate(-50%, -50%);
+    align-items: flex-end;
+    margin-top: 17rem;
  }
 
  div.f-spacer {
@@ -146,7 +129,6 @@ input {
     margin: 0 0 0 0;
     margin-top: 4rem;
     padding: 2rem;
-    width: 35vw;
     height: 80vh;
     background-color: white;
     overflow: scroll;
@@ -168,7 +150,6 @@ input {
     margin-bottom: 1rem;
     padding: 1rem;
     background-color: white;
-    width: 35vw;
     border-radius: 2rem;
  }
 
@@ -179,9 +160,7 @@ input {
  div.amount {
     border-radius: 2rem;
     background-color: rgba(27, 177, 27, 0.5);
-    width: 70%;
     text-align: center;
-    margin-left: 2rem;
     font-size: 1.5rem;
  }
 
@@ -191,3 +170,15 @@ input {
     height: 1em;
     margin-bottom: 1em;
  }
+
+ @media (max-width: 767px) {
+    iframe {
+        width: 100%;
+        height: 50vh; 
+    }
+
+    .site_title {
+        display: block;
+        text-align: center;
+    }
+}
