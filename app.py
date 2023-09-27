@@ -70,7 +70,7 @@ def show_question(num):
         return redirect(f'/form/question/{len(responses)+1}')
     elif num >= len(questions) and (len(responses.keys()) == len(questions)):
         flash('Thank you for taking the time to fill out the form!', 'success')
-        flash('WOOHOO! Here are some grants you may be elgibile for...', 'success')
+        flash('WOOHOO! Here are some grants you may be eligibile for...', 'success')
         return redirect(url_for('handle_form'))
     
     next_question = GrantForm.get_next_question(form, num)
