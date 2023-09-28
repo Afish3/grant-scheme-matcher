@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template, session, json, request, jsonify, flash, url_for
 from flask_debugtoolbar import DebugToolbarExtension
+from waitress import serve
 from collections import OrderedDict
 from dotenv import load_dotenv
 import pickle
@@ -19,11 +20,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///grant-matcher"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 
-app.debug = True
-app.config['SECRET_KEY'] = "I'LL NEVER TELL!!"
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+# app.debug = True
+# app.config['SECRET_KEY'] = "I'LL NEVER TELL!!"
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
-debug = DebugToolbarExtension(app)
+# debug = DebugToolbarExtension(app)
 
 connect_db(app)
 
@@ -214,3 +215,6 @@ def handle_ai_similarity_search(responses, knowledge_base):
         print(callback)
 
     return res
+
+if __name__ == "__main__":
+    serve(app, host='0.0.0.0', port=80)
