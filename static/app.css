@@ -171,6 +171,11 @@ select {
     margin-bottom: 1em;
  }
 
+ .begin-button {
+    display: flex;
+    justify-content: center;
+ }
+
  @media (max-width: 767px) {
     iframe {
         width: 100%;
