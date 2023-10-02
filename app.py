@@ -44,16 +44,23 @@ app.jinja_env.filters['is_string'] = is_string
 
 @app.route('/')
 def index():
+    """Home page check the session to see if the form has been filled out before. If it has the results template is returned showing applicable grants. Approximate calculations of money that could be recieved are calculated with the Grant class method calculate_amount and passed to the template.
+    
+    else, the home page is shown to start filling out the form.
+    """
     load_dotenv()
     if session.get('eligible_grants') is not None:
         grants = session.get('eligible_grants')
         responses_dict = session.get('responses')
         responses = [(key, value) for key, value in responses_dict.items()]
+
         size = responses[len(responses)-1][1]
         age = responses[len(responses)-4][1]
         amount_of_applicants = responses[len(responses)-3][1]
+
         for num in grants:
             grant_data[f'g{num}']['amount'] = Grants.calculate_amount(num, size, age, amount_of_applicants)
+
         return render_template('response.html', grants_list=grants, responses=responses, grant_titles=grant_titles, grant_data=grant_data)
     return render_template('home.html')
 
@@ -61,10 +68,12 @@ def index():
 def show_question(num):
     """Form path question by question.
 
-    The form questions correspond to the number of items in the list of responses
+    The form questions correspond to the number of items in the list of responses plus 1.
 
-    >>> num == len(session['responses'])
+    >>> num == len(session['responses']) + 1
     True
+
+    questions are generated in order by calling the get_next_question class method on the GrantForm in forms.py.
     """
     form = GrantForm()
     responses = session.get('responses', OrderedDict())
@@ -73,13 +82,16 @@ def show_question(num):
         return redirect(f'/form/question/{len(responses)+1}')
     elif num >= len(questions) and (len(responses.keys()) == len(questions)):
         flash('Thank you for taking the time to fill out the form!', 'success')
-        flash('WOOHOO! Here are some grants you may be eligibile for...', 'success')
+
+        # Sumbit all answers to ai functionality.
         return redirect(url_for('handle_form'))
     
     next_question = GrantForm.get_next_question(form, num)
     if next_question is not None:
         form_html = next_question.json['form']
         question = next_question.json['question']
+
+        # Calculate progress for progress bar on the form
         progress = str(round(get_progress(len(questions), num)))
         return render_template('questions.html', form=form, question=question, form_html=form_html, num=num, progress_so_far=progress)
     return render_template('errors.html')
