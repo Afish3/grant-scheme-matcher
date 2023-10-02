@@ -98,15 +98,12 @@ def show_question(num):
 
 @app.route('/post/response/<int:num>', methods=['POST'])
 def post_response(num):
+    """Form answer post path. Responses to questions are added to a dictionary and saved in the session.
+    """
     form = GrantForm()
     responses = session.get('responses')
 
     if request.method == 'POST':
-        print(form.csrf_token)
-        if form.validate_on_submit():
-            print('Successfully VALIDATED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        else:
-            print('Failed to validate!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
         if responses is None:
             responses = {}
         data = form.data
@@ -114,22 +111,30 @@ def post_response(num):
         responses[questions[num-1]] = answer
         session['responses'] =  responses
         print(session['responses'])
+
     return redirect(f'/form/question/{num+1}')
 
 @app.route('/back')
 def go_to_previous_question():
     """Reverses the most recent answer and redirects to the previous question"""
+
     responses = session.get('responses', {})
     num = len(responses)
-    print(responses)
-    print(questions[num-1])
     del responses[questions[num-1]]
     session['responses'] = responses
-    print(session.get('responses', {}))
+    
     return redirect(url_for('show_question', num=num))
 
 @app.route('/form')
 def handle_form():
+    """
+    knowledge_base is created by creating the all_grants.pkl file that holds the vectored grant information from grant scheme pdfs.
+
+    User responses are sent as a string along with knowledge base to handle_ai_similarity_search function for AI analysis. 
+    
+    The LLM's response is converted to a list of integers representing the grants that are applicable to the user to be stored in session and displayed at the root path '/' 
+    
+    """
 
     responses_dict = session.get('responses')
     responses_text = ''
@@ -154,6 +159,11 @@ def restart():
     return redirect(url_for('show_question', num=1))
 
 def get_knowledge_base():
+    """
+    Creates a knowledge base for use with the LLM that consists of vectorized text extracted from grant scheme pdf documents.
+
+    knowledge_base will be saved for future use as all_grants.pkl until new grants are added or API keys for vector conversion are changed.
+    """
     if os.path.exists('all_grants.pkl'):
         with open("all_grants.pkl", "rb") as f:
                 knowledge_base = pickle.load(f)
