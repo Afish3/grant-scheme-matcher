@@ -144,7 +144,11 @@ def handle_form():
     knowledge_base = get_knowledge_base()
     res = handle_ai_similarity_search(responses_text, knowledge_base)
 
-    grants_list = [int(x) for x in res.split(',')]
+    try:
+        grants_list = [int(x) for x in res.split(',')]
+    except ValueError:
+        return redirect(url_for('handle_form'))
+
     session['eligible_grants'] = grants_list
 
     return redirect(url_for('index'))
