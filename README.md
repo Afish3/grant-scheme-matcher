@@ -4,6 +4,8 @@ This application takes user form data and uses the OpenAI API to match them with
 
 This is designed to increase accessability to grant eligibility criteria that is often not accessible to farmers and other land owners.
 
+The website can be found here: [scotwoodgrantfinder.uk](http://scotwoodgrantfinder.uk/)
+
 ## Table of Contents
 
 - [Features](#features)
