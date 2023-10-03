@@ -26,7 +26,7 @@ grant_data = {'g1': {'amount': 1, 'url':
 
 states = ["Land Management Plan", "Habitat Protectioin", "Deer Management", "Woodlands In and Around Towns", "Low Impact Silvicultural Systems"]
 
-land_uses = ['croft / farm', 'commercial', 'private land, personnal use', 'public land']
+land_uses = ['croft / farm', 'commercial', 'private land, personal use', 'public land']
 
 ownership_types = ['The land is individually owned', 'The land is group owned']
 

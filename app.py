@@ -159,7 +159,7 @@ def restart():
     Reset session and start a new form to find grants.
     """
     session['responses'] = {}
-    session['grants'] = None
+    session['eligible_grants'] = None
     return redirect(url_for('show_question', num=1))
 
 def get_knowledge_base():
