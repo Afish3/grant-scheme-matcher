@@ -32,7 +32,6 @@ body {
   div#main {
     display: flex;
     flex-direction: column;
-
     align-items: center;
 }
 
@@ -100,6 +99,13 @@ select {
     padding: 1rem, 2rem;
     margin-right: 2rem;
  }
+
+ button#submit-button,
+    a#back-button {
+        display: grid;
+        width: 20vw; /* Full width for mobile screens */
+        font-size: 1.7rem;
+    }
 
  .buttons {
     display: flex;
@@ -182,10 +188,19 @@ select {
         height: 50vh; 
     }
 
-    .site_title {
+    .site_title,.new_form {
         display: block;
-        text-align: center;
+        text-align: center;    
     }
+
+    .new_form_txt{
+        font-size: .8rem;
+    }
+
+    .new_form_btn{
+        margin-right: 1em;
+    }
+
 
     main {
         background-color: white;
@@ -200,12 +215,38 @@ select {
     }
 
     input,
-    select {
-        width: 100%; /* Full width for mobile screens */
+    select,.select {
+        width: 90vw; /* Full width for mobile screens */
     }
 
     button#submit-button,
     a#back-button {
-        width: 100%; /* Full width for mobile screens */
+        display: grid;
+        width: 40vw; /* Full width for mobile screens */
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+
+    main {
+        background-color: white;
+        border-radius: 1rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        font-size: 3rem;
+        width: 90%;
+        margin-top: 7rem;
+    }
+
+    div.q-spacer {
+        width: 100vw;
+    }
+
+    .form_question {
+        font-size: 1.2rem;
     }
 }
