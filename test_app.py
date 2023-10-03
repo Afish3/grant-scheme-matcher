@@ -89,3 +89,24 @@ class AppTestCase(unittest.TestCase):
 
             # Assert that the response redirects to the previous question
             self.assertRedirects(response, '/form/question/1') 
+
+    def test_restart(self):
+        with self.client:
+            # Simulate an existing session with some responses and eligible grants
+            with self.client.session_transaction() as sess:
+                sess['responses'] = {'Question 1': 'Answer 1'}
+                sess['eligible_grants'] = [1, 2, 3]  # Assuming a list of eligible grants
+
+            # Make a GET request to /restart
+            response = self.client.get('/restart')
+
+            # Assert that the response status code is a redirect (HTTP 302)
+            self.assertEqual(response.status_code, 302)
+
+            # Assert that the session was reset correctly (no responses and eligible grants)
+            with self.client.session_transaction() as sess:
+                self.assertNotIn('responses', sess)
+                self.assertIsNone(sess.get('eligible_grants'))
+
+            # Assert that the response redirects to the first question
+            self.assertRedirects(response, '/form/question/1') 
