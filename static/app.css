@@ -89,7 +89,7 @@ select {
     color: #23b499;
  }
 
- button#submit-button {
+ button#submit-button, button#begin-button {
     font-size: 2rem;
     padding: 1rem, 2rem;
  }
@@ -101,10 +101,11 @@ select {
  }
 
  button#submit-button,
-    a#back-button {
+    a#back-button,
+    button#begin-button {
         display: grid;
         width: 20vw; /* Full width for mobile screens */
-        font-size: 1.7rem;
+        font-size: 1.6rem;
     }
 
  .buttons {
@@ -188,7 +189,7 @@ select {
         height: 50vh; 
     }
 
-    .site_title,.new_form {
+    .site_title,.new_form_txt {
         display: block;
         text-align: center;    
     }
@@ -225,6 +226,12 @@ select {
         width: 40vw; /* Full width for mobile screens */
         font-size: 1.5rem;
     }
+
+    button#begin-button {
+        width: 100vw; /* Full width for mobile screens */
+        display: grid;
+        font-size: 1.5rem;
+    }
 }
 
 @media (max-width: 576px) {
@@ -240,6 +247,10 @@ select {
         font-size: 3rem;
         width: 90%;
         margin-top: 7rem;
+    }
+
+    main#home {
+        margin-top: 0;
     }
 
     div.q-spacer {
