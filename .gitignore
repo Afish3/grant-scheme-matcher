@@ -1,5 +1,6 @@
-.env/
+.env
 venv/
-__pyache__
+__pycache__/
 .vscode/
-.DS_STORE
+.DS_Store
+all_grants.pkl
