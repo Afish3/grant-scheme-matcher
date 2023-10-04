@@ -1,7 +1,8 @@
 import unittest
 from flask import Flask, session, url_for
+import os
 
-from app import app
+from app import app, get_knowledge_base
 
 class AppTestCase(unittest.TestCase):
 
@@ -110,3 +111,15 @@ class AppTestCase(unittest.TestCase):
 
             # Assert that the response redirects to the first question
             self.assertRedirects(response, '/form/question/1') 
+
+#    """ def test_creates_all_grants_pkl_file(self):
+#         # Remove the all_grants.pkl file if it exists to start with a clean slate
+#         if os.path.exists('all_grants.pkl'):
+#             os.remove('all_grants.pkl')
+
+#         # Call the function
+#         knowledge_base = get_knowledge_base()
+
+#         # Check if the file exists
+#         self.assertTrue(os.path.exists('all_grants.pkl'))
+#     """
