@@ -11,18 +11,18 @@ from langchain.callbacks import get_openai_callback
 
 from pdfs import Pdf 
 from forms import GrantForm, questions, grant_data
-from model import connect_db, db, User, Grants
+from model import db, connect_db, User, Grants, track_new_form_submission
 
 app = Flask(__name__)
-
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
 
 secret_key = os.getenv("SECRET_KEY")
 database_url = os.getenv("DATABASE_URL")
 
-app.config["SECRET_KEY"] = secret_key
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+app.config["SECRET_KEY"] = secret_key
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = True
 
 # app.debug = True
 # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
@@ -63,6 +63,12 @@ def index():
 
         return render_template('response.html', grants_list=grants, responses=responses, grant_titles=grant_titles, grant_data=grant_data)
     return render_template('home.html')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """Show 404 NOT FOUND page."""
+
+    return render_template('404.html'), 404
 
 @app.route('/form/question/<int:num>')
 def show_question(num):
@@ -150,6 +156,7 @@ def handle_form():
         return redirect(url_for('handle_form'))
 
     session['eligible_grants'] = grants_list
+    track_new_form_submission(grants_list, responses_dict)
 
     return redirect(url_for('index'))
 

@@ -1,6 +1,7 @@
 """Models for Grant Matcher."""
 
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -20,15 +21,31 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_responses = db.Column(db.JSON, nullable=True)
+    date_accessed = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
-    grants = db.relationship("Grants", backref="user", cascade="all,delete")
+    grants = db.relationship("Grants", secondary="user_grants", backref="users", cascade="all,delete")
+
+    @property
+    def friendly_date(self):
+        """Return nicely-formatted date."""
+
+        return self.created_at.strftime("%a %b %-d  %Y, %-I:%M %p")
+
+class UserGrants(db.Model):
+    """Grants for users."""
+
+    __tablename__ = "user_grants"
+
+    grant_id = db.Column(db.Integer, db.ForeignKey('grants.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 
 class Grants(db.Model):
     """Grants."""
 
     __tablename__ = "grants"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(100), nullable=False)
 
     @classmethod
@@ -79,3 +96,10 @@ class Grants(db.Model):
             max_amount = 1000
             return [min_amount, max_amount]
         return 0
+    
+def track_new_form_submission(grants, responses):
+    user = User(user_responses = responses)
+    grants_to_add = [Grants.query.get(grant_id) for grant_id in grants]
+    user.grants.extend(grants_to_add)
+    db.session.add(user)
+    db.session.commit()
