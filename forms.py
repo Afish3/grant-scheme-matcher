@@ -56,7 +56,10 @@ class GrantForm(FlaskForm):
 
     @classmethod
     def get_next_question(cls, form, num):
-
+        """Returns the next question in the form based on the number provided.
+        
+        Returns a json object containing the question, and a string containing the formatted html of the question to be dynamically iinserted into the template.
+        """
         if num-1 < len(questions):
             question = questions[num-1]
             field_name = f'q{num}'

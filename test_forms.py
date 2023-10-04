@@ -1,5 +1,6 @@
 import unittest
 from forms import GrantForm  
+import json
 
 class TestGrantForm(unittest.TestCase):
 
@@ -10,11 +11,18 @@ class TestGrantForm(unittest.TestCase):
         # Test with a valid question number (e.g., num = 1)
         num = 1
         response = GrantForm.get_next_question(self.form, num)
-        self.assertIsInstance(response, dict)
-        self.assertIn("question", response)
-        self.assertIn("form", response)
-        self.assertTrue(response["question"])
-        self.assertTrue(response["form"])
+        self.assertTrue(isinstance(response, str))
+
+        try:
+            json_response = json.loads(response)
+            self.assertIsInstance(json_response, dict)
+            self.assertIn("question", json_response)
+            self.assertIn("form", json_response)
+            self.assertTrue(json_response["question"])
+            self.assertTrue(json_response["form"])
+        except json.JSONDecodeError:
+            self.fail("Response is not valid JSON.")
+
 
         # Test with an invalid question number (e.g., num = 0)
         num = 0
