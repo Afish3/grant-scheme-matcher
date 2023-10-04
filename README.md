@@ -1,5 +1,5 @@
 # Scotland Grant Scheme Matcher
--
+
 This application takes user form data and uses the OpenAI API to match them with grant schemes that they could potentially be eligible for in Scotland.
 
 This is designed to increase accessability to grant eligibility criteria that is often not accessible to farmers and other land owners.
