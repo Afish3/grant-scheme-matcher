@@ -1,16 +1,13 @@
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings.openai import OpenAIEmbeddings
-# from langchain.embeddings import HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
 import pickle
 import os
-# from langchain.document_loaders import TextLoader
-# from langchain.docstore.document import Document
 
 class Pdf:
     """
-    Class that reads a pdf file of words.
+    Class that contains methods to work with pdf file embeddiings.
     """
 
     def __init__(self, path) -> None:
@@ -23,6 +20,7 @@ class Pdf:
         return f"{len(self.read)} words read"
     
     def read_pdf(self):
+        """Reads the pdf document and creates a string representation of the entire text."""
         text = ""
         pdf_reader = PdfReader(self.path)
         for page in pdf_reader.pages:
@@ -31,6 +29,10 @@ class Pdf:
     
     @classmethod
     def chunk_pdf_text(self, text):
+        """Returns chunks of text from a PDF document text string.
+        
+        This ensures that the LLM will be able to handle all the text.
+        """
         text_splitter = CharacterTextSplitter(
             separator='\n',
             chunk_size=1000,
@@ -43,8 +45,12 @@ class Pdf:
     
     @classmethod
     def get_embedded_text_chunks(self, chunks):
-        # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
-        # file_name = self.path[:-4]
+        """Text chunks are embedded using OpenAIEmbeddings and FAISS vectorstore. 
+        
+        The vector representation is then dumped into a pickle file.
+
+        Note: Make sure that the appropriate API keys are defined eiither as environment variables or directly within this function.
+        """
         if os.path.exists("all_grants.pkl"):
             with open("all_grants.pkl", "rb") as f:
                 knowledge_base = pickle.load(f)
